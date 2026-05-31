@@ -4,7 +4,28 @@ import portrait from "@/assets/hero-portrait.jpg";
 
 export function TryOnSlider() {
   const [pos, setPos] = useState(50);
+  const [saved, setSaved] = useState(false);
+  const [shared, setShared] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "My MirrorMe AI Look", text: "Check out my AI-styled outfit!" });
+      } catch {
+        /* user cancelled */
+      }
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    }
+  };
 
   const move = (clientX: number) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -35,8 +56,18 @@ export function TryOnSlider() {
         <div className="absolute right-3 top-3 rounded-full bg-gradient-primary px-3 py-1 text-[10px] uppercase tracking-wider text-primary-foreground">After</div>
       </div>
       <div className="flex gap-3">
-        <button className="flex-1 rounded-full glass py-3 text-sm">💾 Save Look</button>
-        <button className="flex-1 rounded-full bg-gradient-primary py-3 text-sm font-medium text-primary-foreground shadow-glow">↗ Share Look</button>
+        <button
+          onClick={handleSave}
+          className={`flex-1 rounded-full py-3 text-sm transition ${saved ? "bg-gradient-gold text-gold-foreground shadow-gold" : "glass"}`}
+        >
+          {saved ? "✓ Saved!" : "💾 Save Look"}
+        </button>
+        <button
+          onClick={handleShare}
+          className="flex-1 rounded-full bg-gradient-primary py-3 text-sm font-medium text-primary-foreground shadow-glow transition active:scale-95"
+        >
+          {shared ? "🔗 Link copied!" : "↗ Share Look"}
+        </button>
       </div>
     </div>
   );

@@ -45,13 +45,141 @@ function Phone({ children }: { children: React.ReactNode }) {
   );
 }
 
+function SquadVotes() {
+  const [votes, setVotes] = useState([7, 3, 1, 4]);
+  const [voted, setVoted] = useState<number | null>(null);
+  const voteLabels = [["🔥", "Love"], ["👍", "Good"], ["🤔", "Try"], ["💯", "Perfect"]];
+
+  const handleVote = (i: number) => {
+    if (voted !== null) return;
+    setVoted(i);
+    setVotes((v) => v.map((c, j) => (j === i ? c + 1 : c)));
+  };
+
+  const total = votes.reduce((a, b) => a + b, 0);
+
+  return (
+    <div className="grid grid-cols-4 divide-x divide-white/5 text-center">
+      {voteLabels.map(([e, l], i) => (
+        <button
+          key={l}
+          onClick={() => handleVote(i)}
+          disabled={voted !== null}
+          className={`py-3 transition ${voted === i ? "bg-gradient-primary/20" : voted !== null ? "opacity-60" : "hover:bg-white/5 active:scale-95"}`}
+        >
+          <div className="text-xl">{e}</div>
+          <div className="mt-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{l}</div>
+          <div className="text-xs">{votes[i]}</div>
+        </button>
+      ))}
+      {voted !== null && (
+        <div className="col-span-4 border-t border-white/5 px-4 py-2 text-[10px] text-gold text-center">
+          Thanks! {Math.round((votes[voted] / (total)) * 100)}% of voters agree
+        </div>
+      )}
+    </div>
+  );
+}
+
+const BUDGET_PRESETS = [
+  { label: "Premium", price: "₹4,900", gradient: "from-primary/40" },
+  { label: "Value", price: "₹3,400", gradient: "from-gold/30" },
+  { label: "Budget", price: "₹2,200", gradient: "from-muted-foreground/20" },
+];
+
+function BudgetOptimizer() {
+  const [sliderVal, setSliderVal] = useState(70);
+
+  const selectedIdx = sliderVal > 66 ? 0 : sliderVal > 33 ? 1 : 2;
+  const displayBudget = BUDGET_PRESETS[selectedIdx].price;
+
+  return (
+    <div className="rounded-3xl glass p-5">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">Your budget</span>
+        <span className="font-display text-lg text-gradient-gold">{displayBudget}</span>
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={sliderVal}
+        onChange={(e) => setSliderVal(Number(e.target.value))}
+        className="mt-3 w-full accent-[oklch(0.62_0.22_300)]"
+      />
+      <div className="mt-5 space-y-3">
+        {BUDGET_PRESETS.map(({ label, price, gradient }, i) => (
+          <div
+            key={label}
+            className={`flex items-center justify-between rounded-2xl bg-gradient-to-r ${gradient} to-transparent p-3 transition ${selectedIdx === i ? "ring-1 ring-white/20" : ""}`}
+          >
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label} look</div>
+              <div className="font-display text-base">{price}</div>
+            </div>
+            <button
+              onClick={() => document.getElementById("outfits")?.scrollIntoView({ behavior: "smooth" })}
+              className="rounded-full glass px-3 py-1.5 text-xs hover:border-primary/40 transition active:scale-95"
+            >
+              View
+            </button>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 rounded-2xl border border-gold/30 bg-gold/5 p-3 text-xs">
+        <span className="text-gold">💡</span> Achieve a similar aesthetic while saving <b>35%</b>.
+      </div>
+    </div>
+  );
+}
+
+function SustainableMode() {
+  const [choice, setChoice] = useState<"wardrobe" | "shop" | null>(null);
+
+  return (
+    <div className="rounded-3xl glass p-5">
+      <div className="flex items-start gap-3">
+        <span className="text-2xl">🌿</span>
+        <div>
+          <div className="text-sm">You already own a similar ivory shirt.</div>
+          <div className="mt-1 text-xs text-muted-foreground">Pair it with the new charcoal trouser — saves ₹1,800 and one box from landfill.</div>
+        </div>
+      </div>
+      <div className="mt-4 flex gap-2">
+        <button
+          onClick={() => setChoice("wardrobe")}
+          className={`flex-1 rounded-full py-2 text-xs transition active:scale-95 ${choice === "wardrobe" ? "bg-gradient-primary text-primary-foreground shadow-glow" : "bg-gradient-primary text-primary-foreground"}`}
+        >
+          {choice === "wardrobe" ? "✓ Using wardrobe" : "Use wardrobe"}
+        </button>
+        <button
+          onClick={() => setChoice("shop")}
+          className={`flex-1 rounded-full py-2 text-xs transition active:scale-95 ${choice === "shop" ? "bg-gradient-gold text-gold-foreground shadow-gold" : "glass"}`}
+        >
+          {choice === "shop" ? "✓ Shopping new" : "Shop new"}
+        </button>
+      </div>
+      {choice === "wardrobe" && (
+        <div className="mt-3 rounded-xl border border-green-400/20 bg-green-400/5 p-2 text-[11px] text-green-400">
+          Great choice! 🌿 You saved ₹1,800 and reduced your carbon footprint.
+        </div>
+      )}
+      {choice === "shop" && (
+        <div className="mt-3 rounded-xl border border-gold/20 bg-gold/5 p-2 text-[11px] text-gold">
+          Added to cart. Consider sustainable brands for a greener choice!
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Index() {
   const [demo, setDemo] = useState<string | null>(null);
 
   return (
     <Phone>
       {/* 1. SPLASH */}
-      <Splash onStart={() => document.getElementById("problem")?.scrollIntoView({ behavior: "smooth" })} />
+      <Splash onStart={() => document.getElementById("upload")?.scrollIntoView({ behavior: "smooth" })} />
 
       {/* 2. PROBLEM */}
       <Section
@@ -100,13 +228,16 @@ function Index() {
       {/* 3. UPLOAD */}
       <Section id="upload" eyebrow="Step 01" title="Meet your mirror." subtitle="Upload a photo or step in as a demo persona.">
         <UploadCard onPicked={setDemo} />
-        <button className="mt-6 w-full rounded-full bg-gradient-primary py-4 text-sm font-medium text-primary-foreground shadow-glow">
+        <button
+          onClick={() => document.getElementById("analysis")?.scrollIntoView({ behavior: "smooth" })}
+          className="pulse-glow mt-6 w-full rounded-full bg-gradient-primary py-4 text-sm font-medium text-primary-foreground shadow-glow transition active:scale-95"
+        >
           Analyze My Style {demo && `— ${demo}`}
         </button>
       </Section>
 
       {/* 4. ANALYSIS */}
-      <Section eyebrow="Step 02" title="AI is reading your style DNA." subtitle="50,000 fashion signals scanned in under 3 seconds.">
+      <Section id="analysis" eyebrow="Step 02" title="AI is reading your style DNA." subtitle="50,000 fashion signals scanned in under 3 seconds.">
         <Analysis />
       </Section>
 
@@ -116,7 +247,7 @@ function Index() {
       </Section>
 
       {/* 6. OUTFIT GENERATION */}
-      <Section eyebrow="Step 04" title="Three looks. One you." subtitle="Curated for your body, budget and moment.">
+      <Section id="outfits" eyebrow="Step 04" title="Three looks. One you." subtitle="Curated for your body, budget and moment.">
         <OutfitGallery />
       </Section>
 
@@ -142,7 +273,7 @@ function Index() {
       </Section>
 
       {/* 8. VIRTUAL TRY-ON */}
-      <Section eyebrow="Virtual Try-On" title="Slide. Reveal. Believe." subtitle="Premium photoreal visualization on your own silhouette.">
+      <Section id="tryon" eyebrow="Virtual Try-On" title="Slide. Reveal. Believe." subtitle="Premium photoreal visualization on your own silhouette.">
         <TryOnSlider />
       </Section>
 
@@ -157,15 +288,7 @@ function Index() {
               <div className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-medium text-gold-foreground">92% 🔥</div>
             </div>
           </div>
-          <div className="grid grid-cols-4 divide-x divide-white/5 text-center">
-            {[["🔥", "Love", 7],["👍","Good",3],["🤔","Try",1],["💯","Perfect",4]].map(([e,l,n]) => (
-              <button key={l as string} className="py-3">
-                <div className="text-xl">{e}</div>
-                <div className="mt-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{l}</div>
-                <div className="text-xs">{n}</div>
-              </button>
-            ))}
-          </div>
+          <SquadVotes />
           <div className="border-t border-white/5 p-4 text-xs text-muted-foreground">
             <span className="text-gold">AI summary —</span> Most friends preferred Outfit B due to its stronger occasion match.
           </div>
@@ -227,27 +350,7 @@ function Index() {
 
       {/* 12. BUDGET OPTIMIZER */}
       <Section eyebrow="Smart budget" title="Same vibe. Your price.">
-        <Card>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Your budget</span>
-            <span className="font-display text-lg text-gradient-gold">₹4,900</span>
-          </div>
-          <input type="range" defaultValue={70} className="mt-3 w-full accent-[oklch(0.62_0.22_300)]" />
-          <div className="mt-5 space-y-3">
-            {[["Premium", "₹4,900", "from-primary/40"],["Value", "₹3,400", "from-gold/30"],["Budget", "₹2,200", "from-muted-foreground/20"]].map(([n,p,g]) => (
-              <div key={n} className={`flex items-center justify-between rounded-2xl bg-gradient-to-r ${g} to-transparent p-3`}>
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{n} look</div>
-                  <div className="font-display text-base">{p}</div>
-                </div>
-                <button className="rounded-full glass px-3 py-1.5 text-xs">View</button>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 rounded-2xl border border-gold/30 bg-gold/5 p-3 text-xs">
-            <span className="text-gold">💡</span> Achieve a similar aesthetic while saving <b>35%</b>.
-          </div>
-        </Card>
+        <BudgetOptimizer />
       </Section>
 
       {/* 13. WEATHER */}
@@ -341,19 +444,7 @@ function Index() {
 
       {/* 17. SUSTAINABLE */}
       <Section eyebrow="Sustainable mode" title="Buy less. Style more.">
-        <Card>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">🌿</span>
-            <div>
-              <div className="text-sm">You already own a similar ivory shirt.</div>
-              <div className="mt-1 text-xs text-muted-foreground">Pair it with the new charcoal trouser — saves ₹1,800 and one box from landfill.</div>
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <button className="flex-1 rounded-full bg-gradient-primary py-2 text-xs text-primary-foreground">Use wardrobe</button>
-            <button className="flex-1 rounded-full glass py-2 text-xs">Shop new</button>
-          </div>
-        </Card>
+        <SustainableMode />
       </Section>
 
       {/* 18. FASHION ROAST */}
