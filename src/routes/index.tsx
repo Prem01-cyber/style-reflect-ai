@@ -242,7 +242,7 @@ function Index() {
       </Section>
 
       {/* 5. OCCASION */}
-      <Section eyebrow="Step 03" title="Tell us about your event.">
+      <Section id="occasion" eyebrow="Step 03" title="Tell us about your event.">
         <OccasionChat />
       </Section>
 
