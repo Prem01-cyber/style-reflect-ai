@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import elegant from "@/assets/outfit-elegant.jpg";
 import trendy from "@/assets/outfit-trendy.jpg";
 import budget from "@/assets/outfit-budget.jpg";
@@ -53,6 +54,18 @@ function Score({ label, value }: { label: string; value: number }) {
 }
 
 export function OutfitGallery() {
+  const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [compared, setCompared] = useState<Set<string>>(new Set());
+
+  const toggleSave = (id: string) =>
+    setSaved((prev) => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
+
+  const toggleCompare = (id: string) =>
+    setCompared((prev) => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
+
+  const scrollToTryOn = () =>
+    document.getElementById("tryon")?.scrollIntoView({ behavior: "smooth" });
+
   return (
     <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 no-scrollbar">
       {outfits.map((o, i) => (
@@ -78,7 +91,12 @@ export function OutfitGallery() {
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Price</div>
                 <div className="font-display text-lg">{o.price}</div>
               </div>
-              <button className="rounded-full bg-gradient-primary px-4 py-2 text-xs font-medium text-primary-foreground">Try On</button>
+              <button
+                onClick={scrollToTryOn}
+                className="rounded-full bg-gradient-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-glow transition active:scale-95"
+              >
+                Try On
+              </button>
             </div>
           </div>
           <div className="space-y-2 p-4">
@@ -86,8 +104,18 @@ export function OutfitGallery() {
             <Score label="Comfort" value={o.scores.comfort} />
             <Score label="Trend" value={o.scores.trend} />
             <div className="mt-3 flex gap-2">
-              <button className="flex-1 rounded-full glass py-2 text-xs">Compare</button>
-              <button className="flex-1 rounded-full glass py-2 text-xs">Save</button>
+              <button
+                onClick={() => toggleCompare(o.id)}
+                className={`flex-1 rounded-full py-2 text-xs transition ${compared.has(o.id) ? "bg-gradient-primary text-primary-foreground shadow-glow" : "glass"}`}
+              >
+                {compared.has(o.id) ? "✓ Compared" : "Compare"}
+              </button>
+              <button
+                onClick={() => toggleSave(o.id)}
+                className={`flex-1 rounded-full py-2 text-xs transition ${saved.has(o.id) ? "bg-gradient-gold text-gold-foreground shadow-gold" : "glass"}`}
+              >
+                {saved.has(o.id) ? "♥ Saved" : "Save"}
+              </button>
             </div>
           </div>
         </motion.article>
