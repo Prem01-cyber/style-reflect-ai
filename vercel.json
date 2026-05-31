@@ -2,5 +2,5 @@
   "framework": null,
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist/client",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/_shell.html" }]
 }
